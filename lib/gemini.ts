@@ -179,7 +179,7 @@ export async function generateChords(vibe: string): Promise<ChordData> {
 
   // "gemini-1.5-flash" is the fast, free-tier model.
   // It's optimized for speed and works well for structured JSON output.
-  const model = client.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = client.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   // Construct the prompt with the user's vibe injected at the end
   const prompt = buildPrompt(vibe);
