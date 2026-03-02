@@ -35,6 +35,10 @@
 import { useRef, useEffect, useCallback } from "react";
 import { ChordData } from "@/types/chord";
 import { chordToNotes } from "@/lib/chordToNotes";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Play, Pause } from "lucide-react";
 
 // We store a reference to the Tone module after dynamic import.
 // Using `any` here because the Tone module's type is complex and
@@ -254,50 +258,38 @@ export default function ChordPlayer({
 
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      {/* Play/Pause button */}
-      <button
+      <Button
         onClick={onPlayToggle}
-        className="flex items-center justify-center gap-2 rounded-xl bg-zinc-800 border border-zinc-700 px-6 py-3
-                   font-semibold text-zinc-100 transition-all hover:bg-zinc-700 active:scale-[0.97]"
+        variant="secondary"
+        size="lg"
+        className="gap-2 rounded-lg font-semibold"
       >
         {isPlaying ? (
           <>
-            {/* Pause icon — two vertical bars */}
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-              <path fillRule="evenodd" d="M6.75 5.25a.75.75 0 0 1 .75-.75H9a.75.75 0 0 1 .75.75v13.5a.75.75 0 0 1-.75.75H7.5a.75.75 0 0 1-.75-.75V5.25Zm7.5 0A.75.75 0 0 1 15 4.5h1.5a.75.75 0 0 1 .75.75v13.5a.75.75 0 0 1-.75.75H15a.75.75 0 0 1-.75-.75V5.25Z" clipRule="evenodd" />
-            </svg>
+            <Pause className="size-5" aria-hidden />
             Pause
           </>
         ) : (
           <>
-            {/* Play icon — triangle pointing right */}
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-              <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
-            </svg>
+            <Play className="size-5" aria-hidden />
             Play
           </>
         )}
-      </button>
+      </Button>
 
-      {/* BPM slider with label and numeric display */}
       <div className="flex flex-1 items-center gap-3 sm:ml-4">
-        <label htmlFor="bpm-slider" className="text-sm font-medium text-zinc-400 whitespace-nowrap">
+        <Label htmlFor="bpm-slider" className="w-10 shrink-0 text-muted-foreground">
           BPM
-        </label>
-        <input
+        </Label>
+        <Slider
           id="bpm-slider"
-          type="range"
           min={60}
           max={180}
-          value={bpm}
-          onChange={(e) => onBpmChange(Number(e.target.value))}
-          className="h-2 flex-1 cursor-pointer appearance-none rounded-full bg-zinc-700
-                     accent-purple-500 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4
-                     [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full
-                     [&::-webkit-slider-thumb]:bg-purple-500"
+          value={[bpm]}
+          onValueChange={(v) => onBpmChange(v[0] ?? bpm)}
+          className="flex-1"
         />
-        {/* Numeric BPM display — fixed width so it doesn't jump as numbers change */}
-        <span className="w-10 text-right text-sm font-mono text-zinc-300">
+        <span className="w-10 text-right text-sm font-mono text-muted-foreground">
           {bpm}
         </span>
       </div>
