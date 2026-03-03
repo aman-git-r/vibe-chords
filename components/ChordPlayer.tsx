@@ -149,13 +149,13 @@ export default function ChordPlayer({
     // notes at the same time (essential for chords).
     // We use 8 voices because our chords can have up to 8 notes.
     // The Synth base gives a clean, simple tone.
-    const synth = new Tone.PolySynth(Tone.Synth, {
+    const synth = new Tone.PolySynth(Tone.FmSynth, {
       maxPolyphony: 8,
       voice: Tone.Synth,
       options: {
-        oscillator: { type: "sawtooth" },  // warm, mellow tone (good for chords)
+        oscillator: { type: "sine" },  // warm, mellow tone (good for chords)
         envelope: {
-          attack: 0.05,    // how quickly the note reaches full volume (50ms = snappy)
+          attack: 0.5,    // how quickly the note reaches full volume (50ms = snappy)
           decay: 0.3,      // how quickly it drops to sustain level
           sustain: 0.4,    // volume level while key is held (40% of peak)
           release: 0.8,    // how long the note fades after release (800ms = smooth tail)

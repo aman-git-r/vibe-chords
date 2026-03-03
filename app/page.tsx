@@ -33,6 +33,8 @@ import ChordCard from "@/components/ChordCard";
 import ChordPlayer from "@/components/ChordPlayer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { SAMPLE_CHORDS } from "@/lib/sampleChords";
 
 export default function Home() {
   // ── Application State ──────────────────────────────────────────────
@@ -75,6 +77,15 @@ export default function Home() {
    *   - If the fetch itself fails (network error), we catch and show a generic message
    *   - Either way, we clear loading state so the user can try again
    */
+  /** Load a sample progression without calling the API (no Gemini quota used). */
+  const handleTrySample = (sample: ChordData) => {
+    setIsPlaying(false);
+    setActiveChordIndex(-1);
+    setError(null);
+    setChordData(sample);
+    setBpm(Math.round((sample.bpm[0] + sample.bpm[1]) / 2));
+  };
+
   const handleGenerate = async (vibe: string) => {
     // Stop current playback before generating new chords
     setIsPlaying(false);
@@ -130,6 +141,22 @@ export default function Home() {
 
         <VibeInput onGenerate={handleGenerate} isLoading={isLoading} />
 
+        <div className="flex flex-col gap-2">
+          <p className="text-xs text-muted-foreground">Try without API (no Gemini quota):</p>
+          <div className="flex flex-wrap gap-2">
+            {SAMPLE_CHORDS.map((sample, i) => (
+              <Button
+                key={i}
+                variant="outline"
+                size="sm"
+                onClick={() => handleTrySample(sample)}
+              >
+                {sample.scale} — {sample.mood_tags[0] ?? "Sample"}
+              </Button>
+            ))}
+          </div>
+        </div>
+
         {error && (
           <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             {error}
@@ -174,7 +201,7 @@ export default function Home() {
             )}
 
             <Card className="border-border bg-card/50">
-              <CardContent className="pt-6">
+              <CardContent>
                 <ChordPlayer
                   chordData={chordData}
                   bpm={bpm}

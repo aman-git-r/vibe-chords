@@ -72,6 +72,10 @@ const CHORD_INTERVALS: Record<string, number[]> = {
   sus4:    [0, 5, 7],         // suspended 4th (replaces 3rd with 4th)
   add9:    [0, 4, 7, 14],     // major triad + 9th
   "9":     [0, 4, 7, 10, 14], // dominant 9th
+  m9:      [0, 3, 7, 10, 14], // minor 9th
+  m11:     [0, 3, 7, 10, 14, 17], // minor 11th (simplified: root, m3, 5, b7, 9, 11)
+  "7b9":   [0, 4, 7, 10, 13], // dominant 7 flat 9
+  "maj7#11": [0, 4, 7, 11, 18], // major 7 sharp 11 (lydian)
   "6":     [0, 4, 7, 9],      // major 6th
   m6:      [0, 3, 7, 9],      // minor 6th
 };
