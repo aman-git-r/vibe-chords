@@ -81,6 +81,8 @@ export default function ChordPlayer({
   const toneRef = useRef<ToneModule>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const synthRef = useRef<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const reverbRef = useRef<any>(null);
   const eventIdRef = useRef<number | null>(null);
   const chordIndexRef = useRef(0);
 
@@ -108,6 +110,10 @@ export default function ChordPlayer({
       synthRef.current.releaseAll();
       synthRef.current.dispose();
       synthRef.current = null;
+    }
+    if (reverbRef.current) {
+      reverbRef.current.dispose();
+      reverbRef.current = null;
     }
 
     eventIdRef.current = null;
@@ -145,25 +151,27 @@ export default function ChordPlayer({
     // Clean up any previous playback before starting fresh
     cleanup();
 
-    // Step 3: Create a PolySynth — a synthesizer that can play multiple
-    // notes at the same time (essential for chords).
-    // We use 8 voices because our chords can have up to 8 notes.
-    // The Synth base gives a clean, simple tone.
-    const synth = new Tone.PolySynth(Tone.FmSynth, {
+    // Step 3: Piano-like PolySynth — percussive envelope (short attack, decay-heavy)
+    // and triangle wave for a warmer, piano-like tone. Run through reverb.
+    const synth = new Tone.PolySynth(Tone.Synth, {
       maxPolyphony: 8,
       voice: Tone.Synth,
       options: {
-        oscillator: { type: "sine" },  // warm, mellow tone (good for chords)
+        oscillator: { type: "triangle" },
         envelope: {
-          attack: 0.5,    // how quickly the note reaches full volume (50ms = snappy)
-          decay: 0.3,      // how quickly it drops to sustain level
-          sustain: 0.4,    // volume level while key is held (40% of peak)
-          release: 0.8,    // how long the note fades after release (800ms = smooth tail)
+          attack: 0.02,   // very fast attack (piano hammer hit)
+          decay: 0.4,     // quick decay to sustain
+          sustain: 0.25,  // low sustain (note fades like a piano)
+          release: 0.6,   // moderate release tail
         },
       },
-    }).toDestination(); // .toDestination() connects the synth to the speakers
+    });
+
+    const reverb = new Tone.Reverb({ decay: 2, wet: 0.35 }).toDestination();
+    synth.connect(reverb);
 
     synthRef.current = synth;
+    reverbRef.current = reverb;
 
     // Step 4: Set the BPM on the Transport (Tone.js's master clock)
     const transport = Tone.getTransport();
@@ -195,12 +203,12 @@ export default function ChordPlayer({
         //   - notes: array of note strings to play simultaneously
         //   - "4n": quarter note duration (one beat at current BPM)
         //   - time: the exact audio-thread time to start (from callback arg)
-        synth.triggerAttackRelease(notes, "4n", time);
+        synth.triggerAttackRelease(notes, "2n", time);
 
         // Advance to the next chord, looping back to the start
         chordIndexRef.current = (idx + 1) % chordData.progression.length;
       },
-      "4n" // repeat interval: every quarter note (one beat)
+      "2n" // repeat interval: every quarter note (one beat)
     );
 
     eventIdRef.current = eventId;
