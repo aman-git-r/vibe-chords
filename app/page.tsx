@@ -56,7 +56,7 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
 
   /** Base octave for chord playback (3–6). Higher = brighter. */
-  const [octave, setOctave] = useState(4);
+  const [octave, setOctave] = useState(3);
 
   /**
    * Which chord card is highlighted during playback.

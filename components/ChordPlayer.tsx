@@ -73,7 +73,7 @@ export default function ChordPlayer({
   chordData,
   bpm,
   onBpmChange,
-  octave = 4,
+  octave = 3,
   onOctaveChange,
   isPlaying,
   onPlayToggle,

@@ -180,5 +180,3 @@ This project is licensed under the **MIT License** — see [LICENSE](LICENSE) fo
 3. Commit your changes (`git commit -m 'Add some feature'`).
 4. Push to the branch (`git push origin feature/your-feature`).
 5. Open a Pull Request.
-
-For deeper context (goals, architecture, risks), see [docs/prd.md](docs/prd.md).
