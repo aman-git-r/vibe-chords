@@ -38,7 +38,7 @@ import { chordToNotes } from "@/lib/chordToNotes";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Play, Pause } from "lucide-react";
+import { Play, Pause, ChevronDown, ChevronUp } from "lucide-react";
 
 // We store a reference to the Tone module after dynamic import.
 // Using `any` here because the Tone module's type is complex and
@@ -54,6 +54,10 @@ interface ChordPlayerProps {
   bpm: number;
   /** Called when user drags the BPM slider */
   onBpmChange: (bpm: number) => void;
+  /** Base octave for chord playback (3–6). Higher = brighter. */
+  octave?: number;
+  /** Called when user changes octave */
+  onOctaveChange?: (octave: number) => void;
   /** Whether audio is currently playing */
   isPlaying: boolean;
   /** Called when user clicks Play or Pause */
@@ -62,10 +66,15 @@ interface ChordPlayerProps {
   onChordChange: (index: number) => void;
 }
 
+const OCTAVE_MIN = 2;
+const OCTAVE_MAX = 6;
+
 export default function ChordPlayer({
   chordData,
   bpm,
   onBpmChange,
+  octave = 4,
+  onOctaveChange,
   isPlaying,
   onPlayToggle,
   onChordChange,
@@ -179,7 +188,9 @@ export default function ChordPlayer({
 
     // Pre-compute the notes for each chord in the progression.
     // We do this once here rather than on every beat for performance.
-    const chordNotes = chordData.progression.map((chord) => chordToNotes(chord));
+    const chordNotes = chordData.progression.map((chord) =>
+      chordToNotes(chord, octave)
+    );
 
     // Step 5: Schedule a repeating event on every quarter note ("4n").
     // The callback fires on each beat. Inside it, we:
@@ -215,7 +226,7 @@ export default function ChordPlayer({
 
     // Step 6: Start the Transport — this kicks off the scheduled events
     transport.start();
-  }, [bpm, chordData, cleanup, onChordChange]);
+  }, [bpm, chordData, octave, cleanup, onChordChange]);
 
   /**
    * Effect: react to isPlaying changes.
@@ -285,21 +296,51 @@ export default function ChordPlayer({
         )}
       </Button>
 
-      <div className="flex flex-1 items-center gap-3 sm:ml-4">
-        <Label htmlFor="bpm-slider" className="w-10 shrink-0 text-muted-foreground">
-          BPM
-        </Label>
-        <Slider
-          id="bpm-slider"
-          min={60}
-          max={180}
-          value={[bpm]}
-          onValueChange={(v) => onBpmChange(v[0] ?? bpm)}
-          className="flex-1"
-        />
-        <span className="w-10 text-right text-sm font-mono text-muted-foreground">
-          {bpm}
-        </span>
+      <div className="flex flex-1 flex-wrap items-center gap-3 sm:ml-4">
+        <div className="flex flex-1 items-center gap-3 min-w-0">
+          <Label htmlFor="bpm-slider" className="w-10 shrink-0 text-muted-foreground">
+            BPM
+          </Label>
+          <Slider
+            id="bpm-slider"
+            min={60}
+            max={180}
+            value={[bpm]}
+            onValueChange={(v) => onBpmChange(v[0] ?? bpm)}
+            className="flex-1"
+          />
+          <span className="w-10 text-right text-sm font-mono text-muted-foreground">
+            {bpm}
+          </span>
+        </div>
+        {onOctaveChange && (
+          <div className="flex items-center gap-2">
+            <Label className="text-muted-foreground shrink-0">Octave</Label>
+            <div className="flex items-center rounded-md border border-input bg-muted/30">
+              <button
+                type="button"
+                onClick={() => onOctaveChange(Math.max(OCTAVE_MIN, octave - 1))}
+                disabled={octave <= OCTAVE_MIN}
+                className="inline-flex size-8 items-center justify-center rounded-l-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
+                aria-label="Lower octave"
+              >
+                <ChevronDown className="size-4" />
+              </button>
+              <span className="min-w-[2rem] text-center text-sm font-mono tabular-nums">
+                {octave}
+              </span>
+              <button
+                type="button"
+                onClick={() => onOctaveChange(Math.min(OCTAVE_MAX, octave + 1))}
+                disabled={octave >= OCTAVE_MAX}
+                className="inline-flex size-8 items-center justify-center rounded-r-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
+                aria-label="Raise octave"
+              >
+                <ChevronUp className="size-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

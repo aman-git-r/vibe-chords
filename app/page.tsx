@@ -55,6 +55,9 @@ export default function Home() {
   /** Whether the chord progression is currently being played through Tone.js */
   const [isPlaying, setIsPlaying] = useState(false);
 
+  /** Base octave for chord playback (3–6). Higher = brighter. */
+  const [octave, setOctave] = useState(4);
+
   /**
    * Which chord card is highlighted during playback.
    * -1 means no chord is active (not playing).
@@ -206,6 +209,8 @@ export default function Home() {
                   chordData={chordData}
                   bpm={bpm}
                   onBpmChange={setBpm}
+                  octave={octave}
+                  onOctaveChange={setOctave}
                   isPlaying={isPlaying}
                   onPlayToggle={() => setIsPlaying((prev) => !prev)}
                   onChordChange={setActiveChordIndex}
