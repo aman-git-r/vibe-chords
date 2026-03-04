@@ -31,6 +31,7 @@ import { ChordData } from "@/types/chord";
 import VibeInput from "@/components/VibeInput";
 import ChordCard from "@/components/ChordCard";
 import ChordPlayer from "@/components/ChordPlayer";
+import ExportButton from "@/components/ExportButton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -204,7 +205,7 @@ export default function Home() {
             )}
 
             <Card className="border-border bg-card/50">
-              <CardContent>
+              <CardContent className="space-y-4">
                 <ChordPlayer
                   chordData={chordData}
                   bpm={bpm}
@@ -215,6 +216,14 @@ export default function Home() {
                   onPlayToggle={() => setIsPlaying((prev) => !prev)}
                   onChordChange={setActiveChordIndex}
                 />
+                {/* Export MIDI: converts current progression to .mid and triggers download */}
+                <div className="flex justify-end">
+                  <ExportButton
+                    chordData={chordData}
+                    bpm={bpm}
+                    octave={octave}
+                  />
+                </div>
               </CardContent>
             </Card>
           </div>
