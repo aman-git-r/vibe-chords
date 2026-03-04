@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ChordData } from "@/types/chord";
-import { buildPrompt } from "@/lib/promptBuilder";
+import { buildPrompt, buildVariationPrompt } from "@/lib/promptBuilder";
 
 /**
  * getGeminiClient()
@@ -197,6 +197,55 @@ export async function generateChords(vibe: string): Promise<ChordData> {
   const parsed = JSON.parse(jsonString);
 
   // Validate every field at runtime — TypeScript can't protect us from bad AI output
+  const chordData = validateChordData(parsed);
+
+  return chordData;
+}
+
+/**
+ * generateVariation(currentProgression, scale, hint?)
+ *
+ * Asks the AI for a VARIATION of an existing progression instead of generating
+ * from a vibe string.
+ *
+ * WHAT WE'RE DOING
+ * ----------------
+ * Same pipeline as generateChords(): build prompt → call Gemini → clean
+ * response → parse JSON → validate. The only difference is HOW we build the
+ * prompt: we use buildVariationPrompt() which gives the model the current
+ * chords and scale and asks for a modification (optionally guided by a hint
+ * like "darker" or "jazzier").
+ *
+ * WHY REUSE THE SAME CLEAN/VALIDATE FLOW
+ * --------------------------------------
+ * The AI still returns a ChordData-shaped JSON. We don't need different
+ * validation or parsing — we just need a different prompt. So we call
+ * buildVariationPrompt(), then the same model.generateContent → cleanJsonResponse
+ * → JSON.parse → validateChordData. No code duplication for the risky parts
+ * (cleaning and validating).
+ *
+ * @param currentProgression — The chords to vary (e.g. ["Cm", "Ab", "Bb", "Gm"])
+ * @param scale              — Current key (e.g. "C Minor")
+ * @param hint               — Optional: "darker", "jazzier", "more minimal", etc.
+ * @returns Validated ChordData for the new progression
+ */
+export async function generateVariation(
+  currentProgression: string[],
+  scale: string,
+  hint?: string
+): Promise<ChordData> {
+  const client = getGeminiClient();
+  const model = client.getGenerativeModel({ model: "gemini-2.5-pro" });
+
+  // Build the variation-specific prompt (includes current chords + scale + hint)
+  const prompt = buildVariationPrompt(currentProgression, scale, hint);
+
+  const result = await model.generateContent(prompt);
+  const response = result.response;
+  const rawText = response.text();
+
+  const jsonString = cleanJsonResponse(rawText);
+  const parsed = JSON.parse(jsonString);
   const chordData = validateChordData(parsed);
 
   return chordData;

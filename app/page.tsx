@@ -35,7 +35,9 @@ import ExportButton from "@/components/ExportButton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { SAMPLE_CHORDS } from "@/lib/sampleChords";
+import { Loader2, Sparkles } from "lucide-react";
 
 export default function Home() {
   // ── Application State ──────────────────────────────────────────────
@@ -46,6 +48,9 @@ export default function Home() {
 
   /** True while we're waiting for the /api/generate response */
   const [isLoading, setIsLoading] = useState(false);
+
+  /** True while we're waiting for the /api/vary response (so Vary button can show "Varying...") */
+  const [isVariationLoading, setIsVariationLoading] = useState(false);
 
   /** Error message to display, or null if everything is fine */
   const [error, setError] = useState<string | null>(null);
@@ -65,6 +70,12 @@ export default function Home() {
    * 0, 1, 2... corresponds to the index in chordData.progression.
    */
   const [activeChordIndex, setActiveChordIndex] = useState(-1);
+
+  /**
+   * Optional hint for the "Vary" action — e.g. "darker", "jazzier", "more minimal".
+   * When empty, we ask the AI for "a creative variation" with no direction.
+   */
+  const [variationHint, setVariationHint] = useState("");
 
   /**
    * handleGenerate — called when the user submits a vibe description.
@@ -128,6 +139,65 @@ export default function Home() {
     } finally {
       // Always clear loading state, whether we succeeded or failed
       setIsLoading(false);
+    }
+  };
+
+  /**
+   * handleVariation — called when the user clicks "Vary" to get a modified progression.
+   *
+   * WHAT WE'RE DOING
+   * ----------------
+   * We already have a progression on screen. Instead of asking the user to type
+   * a new vibe, we send the current chords and scale to /api/vary. The API
+   * uses a different prompt that tells the AI "here are the current chords,
+   * produce a variation (optionally more X)". The response is still ChordData,
+   * so we replace the current progression and BPM with the new one.
+   *
+   * Flow:
+   *   1. Stop playback and clear active chord (same as when generating new)
+   *   2. Set loading so the Vary button and Generate are disabled
+   *   3. POST to /api/vary with currentProgression, scale, and optional hint
+   *   4. On success: setChordData and setBpm to the new result
+   *   5. On error: setError so the user sees the message
+   *   6. Finally: clear loading
+   *
+   * (When we add History in a later feature, we'll save the current chordData
+   * to history before overwriting it here.)
+   */
+  const handleVariation = async () => {
+    if (!chordData || isLoading || isVariationLoading) return;
+
+    setIsPlaying(false);
+    setActiveChordIndex(-1);
+    setIsLoading(true);
+    setIsVariationLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/vary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          currentProgression: chordData.progression,
+          scale: chordData.scale,
+          hint: variationHint.trim() || undefined,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Something went wrong. Please try again.");
+        return;
+      }
+
+      setChordData(data);
+      setBpm(Math.round((data.bpm[0] + data.bpm[1]) / 2));
+    } catch {
+      setError("Failed to connect. Check your internet and try again.");
+    } finally {
+      setIsLoading(false);
+      setIsVariationLoading(false);
     }
   };
 
@@ -203,6 +273,43 @@ export default function Home() {
                 {chordData.explanation}
               </p>
             )}
+
+            {/* Vary: ask the AI for a variation of the current progression (optional hint) */}
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+              <div className="flex-1 space-y-1.5">
+                <Label htmlFor="vary-hint" className="text-muted-foreground text-sm">
+                  Vary this progression
+                </Label>
+                <input
+                  id="vary-hint"
+                  type="text"
+                  value={variationHint}
+                  onChange={(e) => setVariationHint(e.target.value.slice(0, 200))}
+                  placeholder='e.g. darker, jazzier (optional)'
+                  disabled={isLoading}
+                  className="w-full rounded-md border border-input bg-muted/30 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  aria-label="Optional direction for variation (e.g. darker, jazzier)"
+                />
+              </div>
+              <Button
+                onClick={handleVariation}
+                disabled={isLoading}
+                variant="secondary"
+                className="gap-2 sm:shrink-0"
+              >
+                {isVariationLoading ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" aria-hidden />
+                    Varying...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="size-4" aria-hidden />
+                    Vary
+                  </>
+                )}
+              </Button>
+            </div>
 
             <Card className="border-border bg-card/50">
               <CardContent className="space-y-4">

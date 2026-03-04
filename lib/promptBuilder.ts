@@ -51,3 +51,68 @@ Use standard chord notation (sharps/flats as in the key, e.g. D#m not Ebm when k
 
 Vibe or song: "${vibe}"`;
 }
+
+/**
+ * buildVariationPrompt(currentProgression, scale, hint?)
+ *
+ * Builds a prompt that asks the AI to vary an EXISTING progression instead of
+ * generating one from scratch.
+ *
+ * WHAT WE'RE DOING
+ * ----------------
+ * When the user clicks "Vary", we don't send a new vibe — we send the current
+ * chord progression and key. The AI then produces a RELATED progression (same
+ * key/mood family) that changes at least some chords. The optional "hint" tells
+ * the AI HOW to vary: "darker", "jazzier", "simpler", etc.
+ *
+ * WHY A SEPARATE PROMPT (NOT REUSING buildPrompt)
+ * ------------------------------------------------
+ * buildPrompt(vibe) is for free-form vibe text. The variation flow is
+ * different: we give the model structured context (the current chords and
+ * scale) and ask for a modification. The instructions and tone of the
+ * prompt are different, so a dedicated function keeps each prompt focused
+ * and easier to tune.
+ *
+ * We use the SAME JSON schema as buildPrompt() so the response is valid
+ * ChordData and we can reuse the same validation and UI.
+ *
+ * @param currentProgression — Array of chord symbols, e.g. ["Cm", "Ab", "Bb", "Gm"]
+ * @param scale              — Current key, e.g. "C Minor" (so the AI stays in key)
+ * @param hint               — Optional direction: "darker", "jazzier", "more minimal", etc.
+ *                             If omitted, we ask for "a creative variation".
+ * @returns Full prompt string ready to send to Gemini
+ */
+export function buildVariationPrompt(
+  currentProgression: string[],
+  scale: string,
+  hint?: string
+): string {
+  const variationInstruction = hint
+    ? `Modify the progression to be more: ${hint.trim()}`
+    : "Create a creative variation of this progression";
+
+  // Same schema as buildPrompt() so the AI returns valid ChordData
+  return `You are a professional music theorist and producer.
+
+You are given an existing chord progression in ${scale}:
+${currentProgression.join(" → ")}
+
+${variationInstruction}
+
+Keep it in the same or a very similar key/mood family. Change at least 2 chords so the result feels like a variation, not a copy.
+Return a JSON object ONLY — no preamble, no explanation, no markdown code fences.
+The JSON must follow this exact schema:
+
+{
+  "progression": string[],  // 4-8 chord names (e.g. "Cm", "Fmaj7", "D#m", "G#dim")
+  "bpm": [number, number],  // suggested BPM range [min, max]
+  "scale": string,          // same or similar key, e.g. "C Minor"
+  "mode": string,           // modal name (e.g. "Dorian", "Aeolian")
+  "mood_tags": string[],   // 3-5 single words
+  "explanation": string     // 1-2 sentences max
+}
+
+Use standard chord notation. Ensure the new progression is musically valid and clearly a variation of the original.
+
+Vibe: "variation of ${currentProgression.join(" - ")}"`;
+}
