@@ -106,6 +106,30 @@ input[type="range"]::-moz-range-track {
   background: oklch(0.9 0.005 260);
 }
 
+/* Splash screen animations */
+@keyframes splash-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-splash-fade-up {
+  animation: splash-fade-up 0.5s ease-out both;
+}
+
+.animation-delay-300 {
+  animation-delay: 300ms;
+}
+
+.animation-delay-500 {
+  animation-delay: 500ms;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
