@@ -53,7 +53,9 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${dancingScript.variable} antialiased`}
       >
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider initialTheme={isDark ? "dark" : "light"}>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
