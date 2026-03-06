@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { Geist, Geist_Mono, Dancing_Script } from "next/font/google";
+import { Geist, Geist_Mono, Rochester } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
@@ -14,10 +14,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const dancingScript = Dancing_Script({
-  variable: "--font-dancing-script",
+const rochester = Rochester({
+  variable: "--font-rochester",
   subsets: ["latin"],
-  weight: ["700"],
+  weight: ["400"],
 });
 
 export const metadata: Metadata = {
@@ -46,13 +46,15 @@ export default async function RootLayout({
   const isDark = themeCookie === "dark" || (!themeCookie && false);
 
   return (
-    <html lang="en" className={isDark ? "dark" : ""} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} ${rochester.variable} ${isDark ? "dark" : ""}`}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${dancingScript.variable} antialiased`}
-      >
+      <body className="antialiased">
         <ThemeProvider initialTheme={isDark ? "dark" : "light"}>
           {children}
         </ThemeProvider>

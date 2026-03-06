@@ -1,5 +1,7 @@
 "use client";
 
+import VibeChordsLogo from "@/components/VibeChordsLogo";
+
 interface SplashScreenProps {
   onDismiss: () => void;
 }
@@ -7,11 +9,8 @@ interface SplashScreenProps {
 export default function SplashScreen({ onDismiss }: SplashScreenProps) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background">
-      <h1
-        className="text-5xl sm:text-6xl font-extrabold tracking-tight bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent animate-splash-fade-up"
-        style={{ fontFamily: "var(--font-brand), cursive" }}
-      >
-        VibeChords
+      <h1 className="animate-splash-fade-up">
+        <VibeChordsLogo className="text-5xl sm:text-6xl font-bold tracking-tight bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent" />
       </h1>
 
       <p className="mt-4 text-base sm:text-lg text-muted-foreground animate-splash-fade-up animation-delay-300">
