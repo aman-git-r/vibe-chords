@@ -9,7 +9,7 @@ export default function SplashScreen({ onDismiss }: SplashScreenProps) {
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background">
       <h1
         className="text-5xl sm:text-6xl font-extrabold tracking-tight bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent animate-splash-fade-up"
-        style={{ fontFamily: "var(--font-sora), sans-serif" }}
+        style={{ fontFamily: "var(--font-brand), cursive" }}
       >
         VibeChords
       </h1>
