@@ -1,0 +1,7 @@
+# Netlify config for Next.js (OpenNext adapter auto-detected)
+# https://docs.netlify.com/build/frameworks/framework-setup-guides/nextjs/overview
+
+[build]
+  command = "npm run build"
+
+# Set GEMINI_API_KEY in Netlify: Site settings → Environment variables

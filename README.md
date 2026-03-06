@@ -7,6 +7,8 @@
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?style=flat-square&logo=tailwindcss)
 ![Google Gemini](https://img.shields.io/badge/Gemini-AI-4285F4?style=flat-square&logo=google)
 
+*Deployed at: [your-site.netlify.app](https://www.netlify.com) — replace with your live URL after deploying.*
+
 ---
 
 ## What it does
@@ -103,6 +105,8 @@ vibe-chords/
 │   └── chord.ts              # ChordData interface
 ├── docs/
 │   └── prd.md                # Product requirements and architecture
+├── vitest.config.mts         # Vitest config (path aliases, jsdom)
+├── netlify.toml              # Netlify build config (Next.js)
 └── package.json
 ```
 
@@ -148,14 +152,37 @@ The `ChordData` type in `types/chord.ts` is the single source of truth for this 
 
 ---
 
-## Deployment (e.g. Vercel)
+## Testing
+
+Unit and API tests use [Vitest](https://vitest.dev/) and React Testing Library.
+
+```bash
+npm run test        # watch mode
+npm run test:run    # single run (e.g. for CI)
+```
+
+Tests cover:
+
+- **lib/chordToNotes.ts** — chord symbol → note arrays (major, minor, 7ths, sharps/flats)
+- **lib/promptBuilder.ts** — prompt construction for vibe and variation
+- **lib/gemini.ts** — JSON cleaning (markdown fences, prose) and ChordData validation
+- **app/api/generate/route.ts** — input validation, 400/429/500 responses, success path (with mocked Gemini)
+
+---
+
+## Deployment (Netlify)
+
+Deploy with a shareable URL:
 
 1. Push the repo to GitHub (or your Git host).
-2. Import the project in [Vercel](https://vercel.com) (or run `npx vercel` in the repo).
-3. In the project **Settings → Environment Variables**, add:
-   - **Name:** `GEMINI_API_KEY`
-   - **Value:** your Gemini API key
-4. Redeploy. The app will use the env var; no `.env.local` on the server.
+2. Go to [netlify.com](https://www.netlify.com) → **Add new site** → **Import an existing project** → connect your repo.
+3. Netlify will detect Next.js and use the build settings from `netlify.toml` (build command: `npm run build`).
+4. In **Site configuration** → **Environment variables**, add:
+   - **Key:** `GEMINI_API_KEY`
+   - **Value:** your Gemini API key (get one at [aistudio.google.com](https://aistudio.google.com))
+5. Deploy. VibeChords will be live at `https://your-site-name.netlify.app`.
+
+No `.env.local` on the server — the app uses Netlify’s environment variables.
 
 ---
 

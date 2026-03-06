@@ -56,9 +56,9 @@ function getGeminiClient(): GoogleGenerativeAI {
  * @param raw - The raw text from Gemini's response
  * @returns A clean JSON string ready for JSON.parse()
  */
-function cleanJsonResponse(raw: string): string {
+export function cleanJsonResponse(raw: string): string {
   // Step 1: strip markdown code fences (case-insensitive for ```JSON vs ```json)
-  let cleaned = raw.replace(/```json\s*/gi, "").replace(/```/g, "");
+  const cleaned = raw.replace(/```json\s*/gi, "").replace(/```/g, "");
 
   // Step 2: locate the outermost JSON object boundaries
   const start = cleaned.indexOf("{");
@@ -94,7 +94,7 @@ function cleanJsonResponse(raw: string): string {
  * @returns A validated ChordData object
  * @throws Error with a descriptive message if required fields are invalid
  */
-function validateChordData(data: unknown): ChordData {
+export function validateChordData(data: unknown): ChordData {
   // Cast to a generic record so we can inspect individual fields.
   // This doesn't validate anything — it just lets TypeScript stop complaining
   // about indexing into `unknown`.
