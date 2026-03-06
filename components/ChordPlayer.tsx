@@ -279,7 +279,7 @@ export default function ChordPlayer({
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <Button
         onClick={onPlayToggle}
-        variant="secondary"
+        variant="default"
         size="lg"
         className="gap-2 rounded-lg font-semibold"
       >
