@@ -65,7 +65,7 @@ export default function VibeInput({ onGenerate, isLoading }: VibeInputProps) {
       <Button
         onClick={handleSubmit}
         disabled={!canSubmit}
-        className="w-full rounded-lg font-semibold"
+        className="w-full rounded-lg font-semibold bg-gradient-to-r from-primary to-accent shadow-md hover:shadow-lg hover:shadow-primary/25 transition-shadow"
         size="lg"
       >
         {isLoading ? (

@@ -202,9 +202,13 @@ export default function Home() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center bg-background px-4 py-12 font-sans text-foreground">
-      <main className="w-full max-w-2xl space-y-8">
-        <header className="text-center space-y-2">
+    <div className="flex min-h-screen flex-col items-center bg-gradient-to-b from-background via-card/40 to-card/80 px-4 py-10 font-sans text-foreground">
+      <div
+        className="h-1 w-full max-w-3xl bg-gradient-to-r from-primary via-accent to-primary/80 rounded-full mb-8"
+        aria-hidden="true"
+      />
+      <main className="w-full max-w-3xl space-y-8">
+        <header className="space-y-4 text-center">
           <h1 className="text-4xl font-bold tracking-tight bg-linear-to-r from-primary to-primary/80 bg-clip-text text-transparent">
             VibeChords
           </h1>
@@ -216,13 +220,16 @@ export default function Home() {
         <VibeInput onGenerate={handleGenerate} isLoading={isLoading} />
 
         <div className="flex flex-col gap-2">
-          <p className="text-xs text-muted-foreground">Try without API (no Gemini quota):</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Try without API (no Gemini quota)
+          </p>
           <div className="flex flex-wrap gap-2">
             {SAMPLE_CHORDS.map((sample, i) => (
               <Button
                 key={i}
                 variant="outline"
                 size="sm"
+                className="rounded-full border-accent/40 bg-background/40 text-accent-foreground hover:border-accent hover:bg-accent/15"
                 onClick={() => handleTrySample(sample)}
               >
                 {sample.scale} — {sample.mood_tags[0] ?? "Sample"}
@@ -335,6 +342,9 @@ export default function Home() {
             </Card>
           </div>
         )}
+        <footer className="mt-16 border-t border-border/60 pt-6 text-center text-xs text-muted-foreground">
+          <p>VibeChords · AI-powered chord progression generator</p>
+        </footer>
       </main>
     </div>
   );
