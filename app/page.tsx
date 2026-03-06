@@ -110,10 +110,10 @@ export default function Home() {
 
   return (
     <div className="h-screen overflow-hidden bg-background px-4 py-4 font-sans text-foreground">
-      <div className="flex justify-end pb-2 max-w-7xl mx-auto">
+      <div className="flex justify-end pb-2 mx-auto">
         <ThemeToggle />
       </div>
-      <div className="mx-auto grid h-[calc(100%-3rem)] max-w-7xl grid-cols-1 gap-6 lg:grid-cols-[1.4fr_1fr]">
+      <div className="mx-auto grid h-[calc(100%-3rem)] grid-cols-1 gap-6 lg:grid-cols-[1.4fr_1fr]">
         {/* Left column — chord result area */}
         <div className="flex flex-col overflow-y-auto rounded-xl">
           {chordData ? (
