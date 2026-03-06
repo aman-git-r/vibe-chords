@@ -326,7 +326,7 @@ export default function ChordPlayer({
               >
                 <ChevronDown className="size-4" />
               </button>
-              <span className="min-w-[2rem] text-center text-sm font-mono tabular-nums">
+              <span className="min-w-8 text-center text-sm font-mono tabular-nums">
                 {octave}
               </span>
               <button
