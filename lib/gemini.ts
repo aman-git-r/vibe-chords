@@ -179,7 +179,7 @@ export async function generateChords(vibe: string): Promise<ChordData> {
 
   // "gemini-1.5-flash" is the fast, free-tier model.
   // It's optimized for speed and works well for structured JSON output.
-  const model = client.getGenerativeModel({ model: "gemini-2.5-pro" });
+  const model = client.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   // Construct the prompt with the user's vibe injected at the end
   const prompt = buildPrompt(vibe);
@@ -235,7 +235,7 @@ export async function generateVariation(
   hint?: string
 ): Promise<ChordData> {
   const client = getGeminiClient();
-  const model = client.getGenerativeModel({ model: "gemini-2.5-pro" });
+  const model = client.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   // Build the variation-specific prompt (includes current chords + scale + hint)
   const prompt = buildVariationPrompt(currentProgression, scale, hint);
