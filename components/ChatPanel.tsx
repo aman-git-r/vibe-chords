@@ -168,7 +168,7 @@ function EmptyState({
               key={prompt}
               type="button"
               onClick={() => onSend(prompt)}
-              className="rounded-full border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/10 hover:border-primary/50"
+              className="rounded-full border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/10 hover:border-primary/50 cursor-pointer"
             >
               {prompt}
             </button>

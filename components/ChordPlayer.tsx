@@ -321,7 +321,7 @@ export default function ChordPlayer({
                 type="button"
                 onClick={() => onOctaveChange(Math.max(OCTAVE_MIN, octave - 1))}
                 disabled={octave <= OCTAVE_MIN}
-                className="inline-flex size-8 items-center justify-center rounded-l-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
+                className="inline-flex size-8 items-center justify-center rounded-l-md text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer disabled:pointer-events-none disabled:opacity-50"
                 aria-label="Lower octave"
               >
                 <ChevronDown className="size-4" />
@@ -333,7 +333,7 @@ export default function ChordPlayer({
                 type="button"
                 onClick={() => onOctaveChange(Math.min(OCTAVE_MAX, octave + 1))}
                 disabled={octave >= OCTAVE_MAX}
-                className="inline-flex size-8 items-center justify-center rounded-r-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
+                className="inline-flex size-8 items-center justify-center rounded-r-md text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer disabled:pointer-events-none disabled:opacity-50"
                 aria-label="Raise octave"
               >
                 <ChevronUp className="size-4" />

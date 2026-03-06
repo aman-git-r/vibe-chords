@@ -181,4 +181,9 @@ input[type="range"]::-moz-range-track {
   body {
     @apply bg-background text-foreground;
   }
+  button,
+  a,
+  [role="button"] {
+    cursor: pointer;
+  }
 }
