@@ -7,7 +7,7 @@
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?style=flat-square&logo=tailwindcss)
 ![Google Gemini](https://img.shields.io/badge/Gemini-AI-4285F4?style=flat-square&logo=google)
 
-*Deployed at: [your-site.netlify.app](https://www.netlify.com) — replace with your live URL after deploying.*
+**Live demo: [vibe-chords.amanrwt.com](https://vibe-chords.amanrwt.com)**
 
 ---
 
@@ -15,8 +15,12 @@
 
 - **Vibe → Chords:** Type a description like *"dark trap beat, minor, aggressive"* or *"sunny beach acoustic"* and hit Generate.
 - **AI generation:** Uses [Google Gemini](https://ai.google.dev/) to return a structured chord progression (4–8 chords), suggested BPM, scale/mode, mood tags, and a short explanation.
+- **Conversational variations:** After generating, follow up with requests like *"make it darker"* or *"add jazz flavor"* — the AI modifies the existing progression.
 - **Playback:** Chords play in the browser via [Tone.js](https://tonejs.github.io/) with adjustable BPM and octave.
 - **Export:** Download the progression as a MIDI file for use in your DAW (FL Studio, Ableton, Logic, etc.).
+- **Dark / light theme:** Toggle between dark and light mode, with system preference detection.
+- **History panel:** Browse and revisit all progressions generated during a session.
+- **Quick prompts & samples:** Get started instantly with suggested prompts or pre-built sample progressions (no API key needed).
 
 No music theory required — just describe the feeling you want.
 
@@ -24,13 +28,17 @@ No music theory required — just describe the feeling you want.
 
 ## Screenshot
 
-After you enter a vibe and generate, you’ll see:
+The app opens with an animated splash screen, then presents a conversational interface:
 
-- Chord cards (e.g. **Cm**, **Ab**, **Bb**, **Gm**)
-- Scale and mode (e.g. **C Minor — Aeolian**)
-- Mood tags (e.g. dark, aggressive, tense)
-- A short explanation of why the progression fits the vibe
-- Play/Pause, BPM slider, octave control, and MIDI export
+- **Splash screen** with the VibeChords logo and a "Get Started" button
+- **Quick prompts** (e.g. *Dreamy lo-fi sunset*) and **sample progressions** on the landing view
+- **Chord cards** (e.g. **Cm**, **Ab**, **Bb**, **Gm**) displayed after generation
+- **Scale and mode** (e.g. **C Minor — Aeolian**)
+- **Mood tags** (e.g. dark, aggressive, tense)
+- A short **explanation** of why the progression fits the vibe
+- **Play/Pause**, **BPM slider**, **octave control**, and **MIDI export**
+- **History panel** (right sidebar) to revisit past progressions
+- **Dark / light mode** toggle in the header
 
 ---
 
@@ -60,7 +68,7 @@ Create a file named `.env.local` in the project root:
 GEMINI_API_KEY=your_api_key_here
 ```
 
-Get a key at [aistudio.google.com](https://aistudio.google.com) → **Get API key** → Create key, then paste it here. **Do not commit this file** (it’s in `.gitignore`).
+Get a key at [aistudio.google.com](https://aistudio.google.com) → **Get API key** → Create key, then paste it here. **Do not commit this file** (it's in `.gitignore`).
 
 ### 3. Run the dev server
 
@@ -72,10 +80,13 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### 4. Use the app
 
-1. Type a vibe (e.g. *“chill lofi hip hop”*).
-2. Click **Generate**.
-3. Use **Play** to hear the progression; adjust **BPM** and **Octave** if you like.
-4. Use **Export MIDI** to download a `.mid` file for your DAW.
+1. Click **Get Started** on the splash screen.
+2. Type a vibe (e.g. *"chill lofi hip hop"*) or pick a **quick prompt**.
+3. Click **Send** to generate.
+4. Use **Play** to hear the progression; adjust **BPM** and **Octave** if you like.
+5. Send a follow-up (e.g. *"make it jazzier"*) to get a **variation** of the current progression.
+6. Use **Export MIDI** to download a `.mid` file for your DAW.
+7. Browse the **History** panel on the right to revisit earlier progressions.
 
 ---
 
@@ -84,27 +95,38 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ```
 vibe-chords/
 ├── app/
-│   ├── page.tsx              # Main UI (vibe input, chord display, controls)
-│   ├── layout.tsx            # Root layout and metadata
-│   ├── globals.css            # Global styles
+│   ├── page.tsx              # Main UI (conversational vibe input, chord display, controls)
+│   ├── layout.tsx            # Root layout, metadata, and theme setup
+│   ├── globals.css           # Global styles (dark/light theme variables)
 │   └── api/
-│       └── generate/
-│           └── route.ts      # POST /api/generate → Gemini API
+│       ├── generate/
+│       │   └── route.ts      # POST /api/generate → Gemini AI (new progression)
+│       └── vary/
+│           └── route.ts      # POST /api/vary → Gemini AI (variation of existing)
 ├── components/
-│   ├── VibeInput.tsx         # Text input + Generate button
+│   ├── SplashScreen.tsx      # Animated landing screen with musical note wallpaper
+│   ├── VibeChordsLogo.tsx    # Logo component (Rochester font)
+│   ├── ThemeProvider.tsx     # Dark/light theme context provider
+│   ├── ThemeToggle.tsx       # Sun/moon theme toggle button
+│   ├── HistoryPanel.tsx      # Right sidebar listing past generated progressions
 │   ├── ChordCard.tsx         # Single chord display card
-│   ├── ChordPlayer.tsx       # Tone.js playback, BPM, octave, MIDI export
-│   └── ui/                   # shadcn/ui components (card, button, etc.)
+│   ├── ChordPlayer.tsx       # Tone.js playback, BPM slider, octave control
+│   ├── ExportButton.tsx      # MIDI export button
+│   ├── VibeInput.tsx         # Text input component
+│   └── ui/                   # shadcn/ui components (card, button, badge, slider, etc.)
 ├── lib/
-│   ├── gemini.ts             # Gemini API client and response validation
-│   ├── promptBuilder.ts      # Builds the AI prompt for chord generation
+│   ├── gemini.ts             # Gemini API client, response validation, variation support
+│   ├── promptBuilder.ts      # Builds AI prompts for chord generation and variation
 │   ├── chordToNotes.ts       # Maps chord names to MIDI notes
+│   ├── midiExport.ts         # Client-side MIDI file generation and download
 │   ├── sampleChords.ts       # Sample progressions for demos/fallback
 │   └── utils.ts              # Shared utilities (e.g. cn)
 ├── types/
-│   └── chord.ts              # ChordData interface
+│   ├── chord.ts              # ChordData interface
+│   └── midi-writer-js.d.ts   # Type declarations for midi-writer-js
 ├── docs/
-│   └── prd.md                # Product requirements and architecture
+│   ├── prd.md                # Product requirements and architecture
+│   └── design-system.md      # Colors, fonts, spacing, component tokens
 ├── vitest.config.mts         # Vitest config (path aliases, jsdom)
 ├── netlify.toml              # Netlify build config (Next.js)
 └── package.json
@@ -114,20 +136,24 @@ vibe-chords/
 
 ## Tech stack
 
-| Layer        | Technology           | Purpose                          |
-|-------------|----------------------|----------------------------------|
-| Framework   | Next.js 16 (App Router) | SSR, API routes, React frontend |
-| Styling     | Tailwind CSS 4       | Utility-first CSS                |
-| UI          | shadcn/ui, Radix     | Accessible components            |
-| AI          | Google Gemini 1.5 Flash | Chord generation from vibe text |
-| Audio       | Tone.js              | Browser synth and sequencing     |
-| Language    | TypeScript           | Type-safe ChordData and APIs     |
+| Layer        | Technology              | Purpose                            |
+|-------------|-------------------------|------------------------------------|
+| Framework   | Next.js 16 (App Router) | SSR, API routes, React frontend   |
+| Styling     | Tailwind CSS 4          | Utility-first CSS                  |
+| UI          | shadcn/ui, Radix        | Accessible components              |
+| AI          | Google Gemini 1.5 Flash | Chord generation from vibe text    |
+| Audio       | Tone.js                 | Browser synth and sequencing       |
+| MIDI Export | midi-writer-js          | Client-side .mid file generation   |
+| Icons       | Lucide React            | Icon library                       |
+| Language    | TypeScript              | Type-safe ChordData and APIs       |
 
 ---
 
 ## API
 
 ### `POST /api/generate`
+
+Generate a new chord progression from a vibe description.
 
 **Request body:**
 
@@ -147,6 +173,22 @@ vibe-chords/
   "explanation": "Minor chords with flat VI and VII create a heavy, unresolved tension common in trap."
 }
 ```
+
+### `POST /api/vary`
+
+Generate a variation of an existing chord progression.
+
+**Request body:**
+
+```json
+{
+  "currentProgression": ["Cm", "Ab", "Bb", "Gm"],
+  "scale": "C Minor",
+  "hint": "make it jazzier"
+}
+```
+
+**Response:** Same `ChordData` shape as `/api/generate`.
 
 The `ChordData` type in `types/chord.ts` is the single source of truth for this shape.
 
@@ -172,7 +214,7 @@ Tests cover:
 
 ## Deployment (Netlify)
 
-Deploy with a shareable URL:
+The live site is deployed at **[vibe-chords.amanrwt.com](https://vibe-chords.amanrwt.com)**. To deploy your own instance:
 
 1. Push the repo to GitHub (or your Git host).
 2. Go to [netlify.com](https://www.netlify.com) → **Add new site** → **Import an existing project** → connect your repo.
@@ -182,15 +224,15 @@ Deploy with a shareable URL:
    - **Value:** your Gemini API key (get one at [aistudio.google.com](https://aistudio.google.com))
 5. Deploy. VibeChords will be live at `https://your-site-name.netlify.app`.
 
-No `.env.local` on the server — the app uses Netlify’s environment variables.
+No `.env.local` on the server — the app uses Netlify's environment variables.
 
 ---
 
 ## Configuration
 
-- **Vibe length:** Input is typically limited (e.g. 200 characters); see `VibeInput` and any validation in `app/page.tsx`.
-- **BPM range:** Playback usually allows 60–180 BPM; defaults from the AI’s suggested range.
-- **Rate limits:** Gemini free tier has daily limits; the app may show a message if you hit them.
+- **Vibe length:** Input is limited to 200 characters; validated on both client and server.
+- **BPM range:** Playback allows 60–180 BPM; defaults from the AI's suggested range.
+- **Rate limits:** Gemini free tier has daily limits; the app shows a message if you hit them.
 
 ---
 

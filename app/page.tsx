@@ -216,7 +216,7 @@ export default function Home() {
                 </Card>
               </div>
             ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-8 text-center px-4">
+              <div className="flex h-full flex-col items-center justify-center gap-8 text-center px-4 py-24">
                 <div className="space-y-2">
                   <Sparkles className="mx-auto size-10 text-primary/60" />
                   <h2 className="text-lg font-semibold text-foreground">
