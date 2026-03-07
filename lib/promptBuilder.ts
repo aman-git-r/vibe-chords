@@ -35,6 +35,14 @@ IMPORTANT — two cases:
 - If the user names a SPECIFIC SONG, artist, or well-known piece: return the ACTUAL chord progression and key of that piece when you know them. Use the real scale (e.g. "D# Minor" or "Eb Minor" as the original uses — do not substitute a different key). Match the real chords and BPM range of the recording. If you are unsure, say so briefly in "explanation" but still give your best guess for the real progression.
 - If the user gives only a mood or vibe (no specific song): return a musically valid progression that fits that vibe.
 
+STRICT RULES (apply to the progression and tags):
+- No chord repeated more than twice in a 4-8 chord progression.
+- No consecutive duplicate chords (e.g. Fmaj7 Fmaj7 is forbidden).
+- Prefer smooth voice leading: root movement by 4th, 5th, or step when possible.
+- Include a mix of tonic (I), subdominant (IV), and dominant (V) function chords where it fits the vibe.
+- mood_tags must reflect the actual sound: if the progression has 2 or more minor (or dark) chords, do NOT tag it "Happy" or "Upbeat".
+- Vibe-specific: for happy/upbeat vibes prefer major and sus chords; for sad/moody vibes minor and diminished are fine.
+
 Return a JSON object ONLY — no preamble, no explanation, no markdown code fences.
 The JSON must follow this exact schema:
 
@@ -43,7 +51,7 @@ The JSON must follow this exact schema:
   "bpm": [number, number],  // suggested BPM range [min, max]
   "scale": string,          // actual key, e.g. "C Minor", "D# Minor", "Eb Minor"
   "mode": string,           // modal name (e.g. "Dorian", "Aeolian")
-  "mood_tags": string[],    // 3-5 single words
+  "mood_tags": string[],    // 3-5 words that ACCURATELY describe how this progression sounds
   "explanation": string     // 1-2 sentences max
 }
 
@@ -99,7 +107,13 @@ ${currentProgression.join(" → ")}
 
 ${variationInstruction}
 
-Keep it in the same or a very similar key/mood family. Change at least 2 chords so the result feels like a variation, not a copy.
+STRICT RULES (apply to the variation):
+- No chord repeated more than twice in the progression; no consecutive duplicate chords.
+- Change at least 2 chords so the result feels like a variation, not a copy.
+- Maintain smooth voice leading in the new progression (root movement by 4th, 5th, or step when possible).
+- mood_tags must reflect the NEW progression's actual quality — update tags to match how the variation sounds.
+- Stay in the same or closely related key.
+
 Return a JSON object ONLY — no preamble, no explanation, no markdown code fences.
 The JSON must follow this exact schema:
 
@@ -108,7 +122,7 @@ The JSON must follow this exact schema:
   "bpm": [number, number],  // suggested BPM range [min, max]
   "scale": string,          // same or similar key, e.g. "C Minor"
   "mode": string,           // modal name (e.g. "Dorian", "Aeolian")
-  "mood_tags": string[],   // 3-5 single words
+  "mood_tags": string[],   // 3-5 words that ACCURATELY describe how this progression sounds
   "explanation": string     // 1-2 sentences max
 }
 
