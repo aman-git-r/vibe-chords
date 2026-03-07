@@ -48,12 +48,13 @@ export default function ExportButton({
   return (
     <Button
       variant="outline"
-      className="gap-2"
+      size="icon"
+      className="shrink-0"
       onClick={() => exportProgressionAsMidi(chordData, bpm, octave)}
-      aria-label="Download chord progression as MIDI file"
+      aria-label="Export MIDI"
+      title="Export MIDI"
     >
       <Download className="size-4" aria-hidden />
-      Export MIDI
     </Button>
   );
 }

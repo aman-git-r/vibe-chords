@@ -193,8 +193,8 @@ export default function Home() {
                   </p>
                 )}
 
-                <Card className="border-border bg-card/50">
-                  <CardContent className="space-y-4">
+                <Card className="border-border bg-card flex self-center">
+                  <CardContent className="flex justify-center gap-3">
                     <ChordPlayer
                       chordData={chordData}
                       bpm={bpm}
@@ -205,13 +205,11 @@ export default function Home() {
                       onPlayToggle={() => setIsPlaying((prev) => !prev)}
                       onChordChange={setActiveChordIndex}
                     />
-                    <div className="flex justify-end">
-                      <ExportButton
-                        chordData={chordData}
-                        bpm={bpm}
-                        octave={octave}
-                      />
-                    </div>
+                    <ExportButton
+                      chordData={chordData}
+                      bpm={bpm}
+                      octave={octave}
+                    />
                   </CardContent>
                 </Card>
               </div>

@@ -276,72 +276,66 @@ export default function ChordPlayer({
   }, [chordData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex items-center gap-3 flex-wrap">
       <Button
         onClick={onPlayToggle}
         variant="default"
-        size="lg"
-        className="gap-2 rounded-lg font-semibold"
+        size="icon"
+        className="rounded-lg"
+        aria-label={isPlaying ? "Pause" : "Play"}
+        title={isPlaying ? "Pause" : "Play"}
       >
         {isPlaying ? (
-          <>
-            <Pause className="size-5" aria-hidden />
-            Pause
-          </>
+          <Pause className="size-5" aria-hidden />
         ) : (
-          <>
-            <Play className="size-5" aria-hidden />
-            Play
-          </>
+          <Play className="size-5" aria-hidden />
         )}
       </Button>
 
-      <div className="flex flex-1 flex-wrap items-center gap-3 sm:ml-4">
-        <div className="flex flex-1 items-center gap-3 min-w-0">
-          <Label htmlFor="bpm-slider" className="w-10 shrink-0 text-muted-foreground">
-            BPM
-          </Label>
-          <Slider
-            id="bpm-slider"
-            min={60}
-            max={180}
-            value={[bpm]}
-            onValueChange={(v) => onBpmChange(v[0] ?? bpm)}
-            className="flex-1"
-          />
-          <span className="w-10 text-right text-sm font-mono text-muted-foreground">
-            {bpm}
-          </span>
-        </div>
-        {onOctaveChange && (
-          <div className="flex items-center gap-2">
-            <Label className="text-muted-foreground shrink-0">Octave</Label>
-            <div className="flex items-center rounded-md border border-input bg-muted/30">
-              <button
-                type="button"
-                onClick={() => onOctaveChange(Math.max(OCTAVE_MIN, octave - 1))}
-                disabled={octave <= OCTAVE_MIN}
-                className="inline-flex size-8 items-center justify-center rounded-l-md text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer disabled:pointer-events-none disabled:opacity-50"
-                aria-label="Lower octave"
-              >
-                <ChevronDown className="size-4" />
-              </button>
-              <span className="min-w-8 text-center text-sm font-mono tabular-nums">
-                {octave}
-              </span>
-              <button
-                type="button"
-                onClick={() => onOctaveChange(Math.min(OCTAVE_MAX, octave + 1))}
-                disabled={octave >= OCTAVE_MAX}
-                className="inline-flex size-8 items-center justify-center rounded-r-md text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer disabled:pointer-events-none disabled:opacity-50"
-                aria-label="Raise octave"
-              >
-                <ChevronUp className="size-4" />
-              </button>
-            </div>
-          </div>
-        )}
+      <div className="flex min-w-80 max-w-80 flex-1 items-center gap-2">
+        <Label htmlFor="bpm-slider" className="w-8 shrink-0 text-muted-foreground text-xs">
+          BPM
+        </Label>
+        <Slider
+          id="bpm-slider"
+          min={60}
+          max={180}
+          value={[bpm]}
+          onValueChange={(v) => onBpmChange(v[0] ?? bpm)}
+          className="flex-1 w-full"
+        />
+        <span className="w-8 shrink-0 text-right text-sm font-mono text-muted-foreground tabular-nums">
+          {bpm}
+        </span>
       </div>
+      {onOctaveChange && (
+        <div className="flex items-center gap-2">
+          <Label className="text-muted-foreground shrink-0 text-xs">Octave</Label>
+          <div className="flex items-center rounded-md border border-input bg-muted/30">
+            <button
+              type="button"
+              onClick={() => onOctaveChange(Math.max(OCTAVE_MIN, octave - 1))}
+              disabled={octave <= OCTAVE_MIN}
+              className="inline-flex size-8 items-center justify-center rounded-l-md text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer disabled:pointer-events-none disabled:opacity-50"
+              aria-label="Lower octave"
+            >
+              <ChevronDown className="size-4" />
+            </button>
+            <span className="min-w-8 text-center text-sm font-mono tabular-nums">
+              {octave}
+            </span>
+            <button
+              type="button"
+              onClick={() => onOctaveChange(Math.min(OCTAVE_MAX, octave + 1))}
+              disabled={octave >= OCTAVE_MAX}
+              className="inline-flex size-8 items-center justify-center rounded-r-md text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer disabled:pointer-events-none disabled:opacity-50"
+              aria-label="Raise octave"
+            >
+              <ChevronUp className="size-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
