@@ -137,6 +137,59 @@ body {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Claude-style scrollbar: apply class "scrollbar-theme" to scroll containers */
+.scrollbar-theme {
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
+}
+
+.scrollbar-theme {
+  scrollbar-color: var(--border) var(--background);
+}
+
+.scrollbar-theme::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-theme::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+.scrollbar-theme::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 9999px;
+}
+
+.scrollbar-theme::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
+.scrollbar-theme::-webkit-scrollbar-corner {
+  background: var(--background);
+}
+
+/* Dark: thumb and track use theme tokens (html.dark set by ThemeProvider) */
+html.dark .scrollbar-theme,
+.dark .scrollbar-theme {
+  scrollbar-color: var(--muted) var(--background);
+}
+
+html.dark .scrollbar-theme::-webkit-scrollbar-track,
+.dark .scrollbar-theme::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+html.dark .scrollbar-theme::-webkit-scrollbar-thumb,
+.dark .scrollbar-theme::-webkit-scrollbar-thumb {
+  background: var(--muted);
+}
+
+html.dark .scrollbar-theme::-webkit-scrollbar-thumb:hover,
+.dark .scrollbar-theme::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
 /* Custom range slider track styling for the BPM slider */
 input[type="range"]::-webkit-slider-runnable-track {
   height: 6px;

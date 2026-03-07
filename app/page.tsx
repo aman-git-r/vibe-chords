@@ -146,9 +146,10 @@ export default function Home() {
           chordData ? "lg:grid-cols-[1fr_380px]" : ""
         }`}
       >
-        {/* Left column — chords + input */}
-        <div className="flex flex-col h-full overflow-hidden p-4">
-          <div className="flex-1 overflow-y-auto">
+        {/* Left column — scrollable content + floating input */}
+        <div className="relative flex flex-col h-full overflow-x-visible overflow-y-hidden">
+          <div className="scrollbar-theme flex-1 min-h-0 overflow-y-scroll">
+            <div className="pb-24 px-4">
             {chordData ? (
               <div className="flex flex-col gap-6 py-2 max-w-2xl mx-auto">
                 <div className="text-center space-y-2">
@@ -265,19 +266,20 @@ export default function Home() {
                 </div>
               </div>
             )}
+
+            {isLoading && (
+              <div className="flex items-center justify-center gap-2 px-4 py-2 text-sm text-muted-foreground">
+                <Loader2 className="size-4 animate-spin" />
+                <span>Generating chords&hellip;</span>
+              </div>
+            )}
+            </div>
           </div>
 
-          {isLoading && (
-            <div className="flex items-center justify-center gap-2 px-4 py-2 text-sm text-muted-foreground">
-              <Loader2 className="size-4 animate-spin" />
-              <span>Generating chords&hellip;</span>
-            </div>
-          )}
-
-          {/* Claude-style input pinned at bottom */}
-          <div className="shrink-0 px-4 pb-4 pt-2">
-            <div className="mx-auto max-w-2xl">
-              <div className="flex items-center gap-2 rounded-2xl border border-input bg-background px-4 py-2.5 shadow-sm transition-colors focus-within:ring-2 focus-within:ring-ring focus-within:border-transparent">
+          {/* Floating input at bottom — width matches content; bar does not cover scrollbar */}
+          <div className="absolute bottom-0 left-0 right-4 z-10 pl-4 pr-4 pb-4 pt-2 bg-background pointer-events-none">
+            <div className="pointer-events-auto mx-auto max-w-2xl w-full">
+              <div className="flex items-center gap-2 rounded-2xl border border-input bg-background px-4 py-2.5 shadow-sm transition-colors focus-within:ring-2 focus-within:ring-ring focus-within:border-transparent min-w-0">
                 <input
                   ref={inputRef}
                   type="text"
@@ -292,7 +294,7 @@ export default function Home() {
                       : "Describe a vibe\u2026"
                   }
                   disabled={isLoading}
-                  className="flex-1 bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex-1 min-w-0 bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   aria-label="Describe a vibe or follow up"
                 />
                 <Button
