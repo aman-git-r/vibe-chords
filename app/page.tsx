@@ -142,12 +142,12 @@ export default function Home() {
       </header>
 
       <div
-        className={`flex-1 overflow-hidden w-full grid grid-cols-1 ${
+        className={`flex-1 min-h-0 overflow-hidden w-full grid grid-cols-1 ${
           chordData ? "lg:grid-cols-[1fr_380px]" : ""
         }`}
       >
         {/* Left column — scrollable content + floating input */}
-        <div className="relative flex flex-col h-full overflow-x-visible overflow-y-hidden">
+        <div className="relative flex flex-col min-h-0 h-full overflow-x-visible overflow-y-hidden">
           <div className="scrollbar-theme flex-1 min-h-0 overflow-y-scroll">
             <div className="pb-24 pt-4 px-4">
             {chordData ? (
@@ -311,11 +311,13 @@ export default function Home() {
 
         {/* Right column — history of generated progressions */}
         {chordData && (
-          <HistoryPanel
-            messages={messages}
-            activeChordData={chordData}
-            onSelectMessage={handleSelectMessage}
-          />
+          <div className="min-h-0 h-full">
+            <HistoryPanel
+              messages={messages}
+              activeChordData={chordData}
+              onSelectMessage={handleSelectMessage}
+            />
+          </div>
         )}
       </div>
     </div>
