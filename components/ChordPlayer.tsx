@@ -21,14 +21,14 @@
  *    be called from within a user-triggered event handler (like our Play button
  *    click). This "unlocks" the AudioContext.
  *
- * 3. REFS VS STATE: We store the Tone.js synth and scheduled event ID in
+ * 3. REFS VS STATE: We store the Tone.js sampler and scheduled event ID in
  *    `useRef` instead of `useState`. Why? Because changing a ref does NOT
- *    trigger a re-render. The synth is a long-lived object that persists
+ *    trigger a re-render. The sampler is a long-lived object that persists
  *    across renders — we don't want React to re-create it every time
  *    something else in the component updates.
  *
  * 4. CLEANUP: When the component unmounts or the chord data changes, we must
- *    stop the transport, dispose the synth, and cancel scheduled events.
+ *    stop the transport, dispose the sampler, and cancel scheduled events.
  *    Otherwise we'd get ghost audio playing in the background.
  */
 
@@ -69,6 +69,41 @@ interface ChordPlayerProps {
 const OCTAVE_MIN = 2;
 const OCTAVE_MAX = 6;
 
+/** CDN base URL for Salamander Grand Piano samples (Tone.js examples). */
+const PIANO_SAMPLES_CDN = "https://tonejs.github.io/audio/salamander/";
+const PIANO_URLS: Record<string, string> = {
+  A0: "A0.mp3",
+  C1: "C1.mp3",
+  "D#1": "Ds1.mp3",
+  "F#1": "Fs1.mp3",
+  A1: "A1.mp3",
+  C2: "C2.mp3",
+  "D#2": "Ds2.mp3",
+  "F#2": "Fs2.mp3",
+  A2: "A2.mp3",
+  C3: "C3.mp3",
+  "D#3": "Ds3.mp3",
+  "F#3": "Fs3.mp3",
+  A3: "A3.mp3",
+  C4: "C4.mp3",
+  "D#4": "Ds4.mp3",
+  "F#4": "Fs4.mp3",
+  A4: "A4.mp3",
+  C5: "C5.mp3",
+  "D#5": "Ds5.mp3",
+  "F#5": "Fs5.mp3",
+  A5: "A5.mp3",
+  C6: "C6.mp3",
+  "D#6": "Ds6.mp3",
+  "F#6": "Fs6.mp3",
+  A6: "A6.mp3",
+  C7: "C7.mp3",
+  "D#7": "Ds7.mp3",
+  "F#7": "Fs7.mp3",
+  A7: "A7.mp3",
+  C8: "C8.mp3",
+};
+
 export default function ChordPlayer({
   chordData,
   bpm,
@@ -83,13 +118,13 @@ export default function ChordPlayer({
    * useRef stores mutable values that persist across renders without
    * triggering re-renders when they change. Perfect for:
    *   - toneRef: the dynamically imported Tone module
-   *   - synthRef: the PolySynth instance (created once, reused)
+   *   - samplerRef: the Tone.Sampler instance (piano samples, created once)
    *   - eventIdRef: the ID of the scheduled repeating event (for cleanup)
    *   - chordIndexRef: tracks which chord we're on during playback
    */
   const toneRef = useRef<ToneModule>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const synthRef = useRef<any>(null);
+  const samplerRef = useRef<any>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const reverbRef = useRef<any>(null);
   const eventIdRef = useRef<number | null>(null);
@@ -114,11 +149,11 @@ export default function ChordPlayer({
     Tone.getTransport().stop();
     Tone.getTransport().cancel();
 
-    // If we have a synth, release all held notes and destroy it
-    if (synthRef.current) {
-      synthRef.current.releaseAll();
-      synthRef.current.dispose();
-      synthRef.current = null;
+    // If we have a sampler, release all held notes and destroy it
+    if (samplerRef.current) {
+      samplerRef.current.releaseAll();
+      samplerRef.current.dispose();
+      samplerRef.current = null;
     }
     if (reverbRef.current) {
       reverbRef.current.dispose();
@@ -139,10 +174,8 @@ export default function ChordPlayer({
    * Flow:
    *   1. Dynamically import Tone.js (only first time — cached after)
    *   2. Call Tone.start() to unlock the AudioContext (browser autoplay policy)
-   *   3. Create a PolySynth with 8 voices (enough for any chord up to 8 notes)
-   *   4. Set the Transport BPM
-   *   5. Schedule a repeating event: every beat, play the next chord
-   *   6. Start the Transport
+   *   3. Create reverb and Tone.Sampler with piano samples from CDN
+   *   4. In sampler onload: connect to reverb, set BPM, schedule beats, start Transport
    */
   const startPlayback = useCallback(async () => {
     // Step 1: Dynamic import — loads Tone.js only in the browser
@@ -152,80 +185,53 @@ export default function ChordPlayer({
     const Tone = toneRef.current;
 
     // Step 2: Unlock AudioContext (required by browser autoplay policy).
-    // This must happen inside a user-gesture handler (click), which it is —
-    // the user clicked Play, which called onPlayToggle, which set isPlaying,
-    // which triggered this effect.
     await Tone.start();
 
     // Clean up any previous playback before starting fresh
     cleanup();
 
-    // Step 3: Piano-like PolySynth — percussive envelope (short attack, decay-heavy)
-    // and triangle wave for a warmer, piano-like tone. Run through reverb.
-    const synth = new Tone.PolySynth(Tone.Synth, {
-      maxPolyphony: 8,
-      voice: Tone.Synth,
-      options: {
-        oscillator: { type: "triangle" },
-        envelope: {
-          attack: 0.02,   // very fast attack (piano hammer hit)
-          decay: 0.4,     // quick decay to sustain
-          sustain: 0.25,  // low sustain (note fades like a piano)
-          release: 0.6,   // moderate release tail
-        },
-      },
-    });
-
     const reverb = new Tone.Reverb({ decay: 2, wet: 0.35 }).toDestination();
-    synth.connect(reverb);
-
-    synthRef.current = synth;
     reverbRef.current = reverb;
 
-    // Step 4: Set the BPM on the Transport (Tone.js's master clock)
-    const transport = Tone.getTransport();
-    transport.bpm.value = bpm;
+    // Step 3: Realistic piano via Tone.Sampler (Salamander Grand Piano from CDN).
+    // Assign to ref immediately so cleanup can dispose it even if onload hasn't run.
+    const sampler = new Tone.Sampler({
+      urls: PIANO_URLS,
+      baseUrl: PIANO_SAMPLES_CDN,
+      release: 1,
+      onload: () => {
+        // Don't start if user already paused or component unmounted (cleanup set ref to null)
+        if (samplerRef.current !== sampler) return;
+        sampler.connect(reverb);
 
-    // Pre-compute the notes for each chord in the progression.
-    // We do this once here rather than on every beat for performance.
-    const chordNotes = chordData.progression.map((chord) =>
-      chordToNotes(chord, octave)
-    );
+        const transport = Tone.getTransport();
+        transport.bpm.value = bpm;
 
-    // Step 5: Schedule a repeating event on every quarter note ("4n").
-    // The callback fires on each beat. Inside it, we:
-    //   a. Determine which chord to play (cycling through the progression)
-    //   b. Tell the parent which chord is active (for card highlighting)
-    //   c. Play the notes using triggerAttackRelease
-    chordIndexRef.current = 0;
+        const chordNotes = chordData.progression.map((chord) =>
+          chordToNotes(chord, octave)
+        );
 
-    const eventId = transport.scheduleRepeat(
-      (time: number) => {
-        const idx = chordIndexRef.current;
-        const notes = chordNotes[idx];
+        chordIndexRef.current = 0;
 
-        // Notify the parent so it can highlight the active ChordCard.
-        // We use setTimeout(..., 0) to defer the state update out of the
-        // audio callback — Tone.js callbacks run in the audio thread and
-        // shouldn't do heavy work. React state updates are deferred safely.
-        setTimeout(() => onChordChange(idx), 0);
+        const eventId = transport.scheduleRepeat(
+          (time: number) => {
+            const idx = chordIndexRef.current;
+            const notes = chordNotes[idx];
 
-        // triggerAttackRelease(notes, duration, time):
-        //   - notes: array of note strings to play simultaneously
-        //   - "4n": quarter note duration (one beat at current BPM)
-        //   - time: the exact audio-thread time to start (from callback arg)
-        synth.triggerAttackRelease(notes, "2n", time);
+            setTimeout(() => onChordChange(idx), 0);
 
-        // Advance to the next chord, looping back to the start
-        chordIndexRef.current = (idx + 1) % chordData.progression.length;
+            sampler.triggerAttackRelease(notes, "1n", time);
+
+            chordIndexRef.current = (idx + 1) % chordData.progression.length;
+          },
+          "1n"
+        );
+
+        eventIdRef.current = eventId;
+        transport.start();
       },
-      "2n" // repeat interval: every quarter note (one beat)
-    );
-
-    eventIdRef.current = eventId;
-
-    // Step 6: Start the Transport — this kicks off the scheduled events
-    transport.start();
+    });
+    samplerRef.current = sampler;
   }, [bpm, chordData, octave, cleanup, onChordChange]);
 
   /**
