@@ -35,7 +35,7 @@ export default function HistoryPanel({
   }, [chordEntries.length]);
 
   return (
-    <div className="flex h-full flex-col rounded-xl border border-border bg-card/60 shadow-sm">
+    <div className="flex h-full flex-col border-l border-border bg-card/60">
       <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
         <History className="size-4 text-muted-foreground" />
         <h2 className="text-sm font-semibold text-foreground">History</h2>

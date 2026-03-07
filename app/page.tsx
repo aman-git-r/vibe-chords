@@ -142,12 +142,12 @@ export default function Home() {
       </header>
 
       <div
-        className={`flex-1 overflow-hidden mx-auto w-full grid grid-cols-1 gap-6 px-4 py-4 ${
+        className={`flex-1 overflow-hidden w-full grid grid-cols-1 ${
           chordData ? "lg:grid-cols-[1fr_380px]" : ""
         }`}
       >
         {/* Left column — chords + input */}
-        <div className="flex flex-col h-full overflow-hidden">
+        <div className="flex flex-col h-full overflow-hidden p-4">
           <div className="flex-1 overflow-y-auto">
             {chordData ? (
               <div className="flex flex-col gap-6 py-2 max-w-2xl mx-auto">
