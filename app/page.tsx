@@ -149,7 +149,7 @@ export default function Home() {
         {/* Left column — scrollable content + floating input */}
         <div className="relative flex flex-col h-full overflow-x-visible overflow-y-hidden">
           <div className="scrollbar-theme flex-1 min-h-0 overflow-y-scroll">
-            <div className="pb-24 px-4">
+            <div className="pb-24 pt-4 px-4">
             {chordData ? (
               <div className="flex flex-col gap-6 py-2 max-w-2xl mx-auto">
                 <div className="text-center space-y-2">
@@ -214,7 +214,7 @@ export default function Home() {
                 </Card>
               </div>
             ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-8 text-center px-4 py-24">
+              <div className="flex h-full flex-col items-center justify-center gap-8 text-center px-4 pt-24">
                 <div className="space-y-2">
                   <Sparkles className="mx-auto size-10 text-primary/60" />
                   <h2 className="text-lg font-semibold text-foreground">
