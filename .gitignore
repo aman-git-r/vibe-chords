@@ -43,6 +43,7 @@ next-env.d.ts
 # docs (local-only reference)
 prd.md
 docs/git-habits-solo.md
+docs/ai-ops-roadmap.md
 
 # cursor
 .cursor
