@@ -110,6 +110,8 @@ ${variationInstruction}
 STRICT RULES (apply to the variation):
 - No chord repeated more than twice in the progression; no consecutive duplicate chords.
 - Change at least 2 chords so the result feels like a variation, not a copy.
+- The first TWO chords must differ from the original progression — do not keep the same opening.
+- If no hint is provided, randomly lean toward one of these characters: jazzier, simpler, more dramatic, or more melodic.
 - Maintain smooth voice leading in the new progression (root movement by 4th, 5th, or step when possible).
 - mood_tags must reflect the NEW progression's actual quality — update tags to match how the variation sounds.
 - Stay in the same or closely related key.
