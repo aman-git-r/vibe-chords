@@ -26,19 +26,13 @@ No music theory required — just describe the feeling you want.
 
 ---
 
-## Screenshot
+## Screenshots
 
-The app opens with an animated splash screen, then presents a conversational interface:
+![Splash screen](docs/screenshots/splash.png)
+*Splash — logo and Get Started.*
 
-- **Splash screen** with the VibeChords logo and a "Get Started" button
-- **Quick prompts** (e.g. *Dreamy lo-fi sunset*) and **sample progressions** on the landing view
-- **Chord cards** (e.g. **Cm**, **Ab**, **Bb**, **Gm**) displayed after generation
-- **Scale and mode** (e.g. **C Minor — Aeolian**)
-- **Mood tags** (e.g. dark, aggressive, tense)
-- A short **explanation** of why the progression fits the vibe
-- **Play/Pause**, **BPM slider**, **octave control**, and **MIDI export**
-- **History panel** (right sidebar) to revisit past progressions
-- **Dark / light mode** toggle in the header
+![Main UI](docs/screenshots/main-chords.png)
+*Main UI — chord progression, scale/mode, mood tags, Play/BPM/Export, History panel.*
 
 ---
 
