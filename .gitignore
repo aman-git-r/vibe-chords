@@ -40,8 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# docs
+# docs (local-only reference)
 prd.md
+docs/git-habits-solo.md
 
 # cursor
 .cursor
