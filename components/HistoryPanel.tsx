@@ -90,13 +90,13 @@ function HistoryEntry({
       onClick={onSelect}
       className={`w-full rounded-lg border px-3 py-2.5 text-left transition-colors cursor-pointer ${
         isActive
-          ? "border-primary/50 bg-primary/10"
-          : "border-border bg-secondary/40 hover:bg-secondary/70 hover:border-primary/20"
+          ? "border-primary/50 bg-primary/5"
+          : "border-border bg-card hover:bg-secondary/60 hover:border-primary/20"
       }`}
     >
       <p className="text-sm font-semibold text-foreground leading-tight">
         {chordData.scale}
-        <span className="text-muted-foreground font-normal">
+        <span className="text-foreground/60 font-normal">
           {" "}
           &middot; {chordData.mode}
         </span>
@@ -107,7 +107,7 @@ function HistoryEntry({
           {chordData.mood_tags.map((tag) => (
             <Badge
               key={tag}
-              variant="secondary"
+              variant="outline"
               className="text-[10px] px-1.5 py-0"
             >
               {tag}
