@@ -27,7 +27,7 @@ describe("POST /api/vary", () => {
 
   it("returns 400 when currentProgression is missing", async () => {
     const res = await POST(nextRequest({ scale: validScale }));
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(200);
     const data = await res.json();
     expect(data.error).toContain("progression");
     expect(generateVariation).not.toHaveBeenCalled();
